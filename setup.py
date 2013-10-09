@@ -5,6 +5,7 @@ ext = Extension('pyzbase32.ext',
     'src/pyzbase32.c',
     'src/zbase32.c',
   ],
+  depends = ['include/zbase32.h'],
   include_dirs = ['include'],
 )
 
