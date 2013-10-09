@@ -6,7 +6,7 @@ CPPFLAGS=-Iinclude
 all: test
 
 clean:
-	find . \( -name \*.o -o -name \*.pyc \) -exec rm {} \;
+	find . \( -name \*.o -o -name \*.pyc -o -name \*.so \) -exec rm {} \;
 	rm -rf MANIFEST __pycache__ dist build src/tests
 
 test: src/tests

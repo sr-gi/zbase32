@@ -1,10 +1,16 @@
 from distutils.core import setup, Extension
 
-import pyzbase32
+ext = Extension('pyzbase32.ext',
+  sources = [
+    'src/pyzbase32.c',
+    'src/zbase32.c',
+  ],
+  include_dirs = ['include'],
+)
 
 setup(
   name = 'pyzbase32',
   version = '0.0.1',
-  ext_modules = [pyzbase32.ffi.verifier.get_extension()],
-  requires = ['cffi'],
+  ext_modules = [ext],
+  packages = ['pyzbase32'],
 )
