@@ -1,20 +1,18 @@
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "binary.h"
 #include "tests.h"
 #include "zbase32.h"
 
-int debug = 0;
 
-/* Data that exceeds this size will cause a buffer overflow */
+/*
+ * Data that exceeds this size (in bytes) as a binary string will cause
+ * a buffer overflow
+ */
 #define BUFFER_SIZE 512 /* bytes */
 
-int main(int argc, char *argv[]) {
-  if (argc > 1 && strcmp(argv[1],"-d") == 0)
-    debug = 1;
 
+int main(int argc, char *argv[]) {
   test(0,"","");
 
   /*
@@ -51,32 +49,38 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
+
 void test(const int bits, const char *input_binary, const char *expected_encoded) {
-  char decoded[BUFFER_SIZE],
-       decoded_binary[BUFFER_SIZE],
-       encoded[BUFFER_SIZE],
-       input[BUFFER_SIZE];
+  static char decoded[BUFFER_SIZE],
+              decoded_binary[BUFFER_SIZE],
+              encoded[BUFFER_SIZE],
+              input[BUFFER_SIZE];
 
   int encoded_length;
-
-  if (debug)
-    printf("Input: %s (%d bits)\n",input_binary,bits);
 
   binary_decode(input,input_binary,bits);
 
   encoded_length = zbase32_encode(encoded,input,bits);
   encoded[encoded_length] = '\0';
   if (strcmp(encoded,expected_encoded) != 0) {
-    fprintf(stderr,"%s != %s\n",encoded,expected_encoded);
+    fprintf(stderr,"%s: Bad encode (%s)",expected_encoded,encoded);
     exit(1);
   }
 
-  zbase32_decode(decoded,encoded,bits);
+  if (zbase32_decode(decoded,encoded,bits) < 0) {
+    fprintf(stderr,"%s: Decode failed\n",expected_encoded);
+    exit(1);
+  }
+
   binary_encode(decoded_binary,decoded,bits);
   decoded_binary[bits] = '\0';
 
   if (strcmp(decoded_binary,input_binary) != 0) {
-    fprintf(stderr,"%s != %s\n",decoded_binary,input_binary);
-    /*exit(1);*/
+    fprintf(stderr,"%s: %s != %s\n",
+      expected_encoded,
+      decoded_binary,
+      input_binary
+    );
+    exit(1);
   }
 }

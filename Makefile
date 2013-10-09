@@ -4,6 +4,10 @@ CPPFLAGS=-Iinclude
 
 all: test
 
+clean:
+	find . -name \*.o -exec rm {} \;
+	rm -f src/tests
+
 test: src/tests
 	./src/tests
 
