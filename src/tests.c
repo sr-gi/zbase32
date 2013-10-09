@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "binary.h"
-#include "tests.h"
 #include "zbase32.h"
 
 
@@ -11,6 +11,10 @@
  */
 #define BUFFER_SIZE 512 /* bytes */
 
+
+void test(const unsigned int bits,
+          const char *input_binary, 
+          const char *expected_encoded);
 
 int main(int argc, char *argv[]) {
   test(0,"","");
@@ -29,7 +33,8 @@ int main(int argc, char *argv[]) {
   test(24,"111100001011111111000111","6n9hq");
   test(24,"110101000111101000000100","4t7ye");
   /* This says 6im5sd in the spec, but the second to last quint is
-   * 11010, which corresponds to 4. */
+   * 11010, which corresponds to 4. Zooko's Python 2 zbase32 module
+   * agrees with 6im54d as well. */
   test(30,"111101010101011110111101000011","6im54d");
 
   /* ASCII: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." */
@@ -50,19 +55,21 @@ int main(int argc, char *argv[]) {
 }
 
 
-void test(const int bits, const char *input_binary, const char *expected_encoded) {
-  static char decoded[BUFFER_SIZE],
-              decoded_binary[BUFFER_SIZE],
-              encoded[BUFFER_SIZE],
-              input[BUFFER_SIZE];
+void test(const unsigned int bits,
+          const char *input_binary, 
+          const char *expected_encoded) {
+  static unsigned char decoded[BUFFER_SIZE],
+                       decoded_binary[BUFFER_SIZE],
+                       encoded[BUFFER_SIZE],
+                       input[BUFFER_SIZE];
 
   int encoded_length;
 
-  binary_decode(input,input_binary,bits);
+  binary_decode(input,(unsigned char *)input_binary,bits);
 
   encoded_length = zbase32_encode(encoded,input,bits);
   encoded[encoded_length] = '\0';
-  if (strcmp(encoded,expected_encoded) != 0) {
+  if (strcmp((char *)encoded,expected_encoded) != 0) {
     fprintf(stderr,"%s: Bad encode (%s)",expected_encoded,encoded);
     exit(1);
   }
@@ -75,7 +82,7 @@ void test(const int bits, const char *input_binary, const char *expected_encoded
   binary_encode(decoded_binary,decoded,bits);
   decoded_binary[bits] = '\0';
 
-  if (strcmp(decoded_binary,input_binary) != 0) {
+  if (strcmp((char *)decoded_binary,input_binary) != 0) {
     fprintf(stderr,"%s: %s != %s\n",
       expected_encoded,
       decoded_binary,

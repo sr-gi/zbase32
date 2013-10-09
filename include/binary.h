@@ -1,2 +1,2 @@
-int binary_decode(char *decoded, const char *encoded, int bits);
-void binary_encode(char *encoded, const char *input, int bits);
+int binary_decode(unsigned char *decoded, const unsigned char *encoded, unsigned int bits);
+void binary_encode(unsigned char *encoded, const unsigned char *input, unsigned int bits);

@@ -1,8 +1,8 @@
 #include "binary.h"
 
-static int read_ascii_bits(const char *ascii_bits, int bits) {
-  char current;
-  const char *end = ascii_bits + bits;
+static int read_ascii_bits(const unsigned char *ascii_bits, unsigned int bits) {
+  unsigned char current;
+  const unsigned char *end = ascii_bits + bits;
   int output = 0;
 
   for (; ascii_bits != end; ascii_bits++) {
@@ -22,11 +22,13 @@ static int read_ascii_bits(const char *ascii_bits, int bits) {
   return output;
 }
 
-int binary_decode(char *decoded, const char *encoded, int bits) {
-  const char *end;
-  int bytes = bits / 8,
-      decoded_value,
-      extra_bits = bits % 8;
+int binary_decode(unsigned char *decoded,
+                  const unsigned char *encoded,
+                  unsigned int bits) {
+  const unsigned char *end;
+  unsigned int bytes = bits / 8,
+               decoded_value,
+               extra_bits = bits % 8;
 
   for (end = decoded + bytes; decoded != end; decoded++, encoded += 8) {
     decoded_value = read_ascii_bits(encoded,8);
@@ -50,7 +52,9 @@ int binary_decode(char *decoded, const char *encoded, int bits) {
 }
 
 
-static void record_ascii_bits(char *output, char byte, int bits) {
+static void record_ascii_bits(unsigned char *output,
+                              unsigned char byte,
+                              unsigned int bits) {
   int bit;
   for (bit = 0; bit < bits; bit++, output++) {
     if ((byte >> (7 - bit)) & 1)
@@ -60,10 +64,12 @@ static void record_ascii_bits(char *output, char byte, int bits) {
   }
 }
 
-void binary_encode(char *encoded, const char *input, int bits) {
-  const char *end;
-  int bytes = bits / 8,
-      extra_bits = bits % 8;
+void binary_encode(unsigned char *encoded,
+                   const unsigned char *input,
+                   unsigned int bits) {
+  const unsigned char *end;
+  unsigned int bytes = bits / 8,
+               extra_bits = bits % 8;
 
   for (end = input + bytes; input != end; encoded += 8, input++)
     record_ascii_bits(encoded,*input,8);
